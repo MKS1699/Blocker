@@ -28,7 +28,8 @@
         'options';
     text-align: center;
 }
-.content > div {
+
+.content>div {
     margin-top: 5%;
 }
 
@@ -42,7 +43,9 @@
     font-size: 3rem;
 }
 
-.options {
+.options,
+.options>a {
     grid-area: options;
     font-size: 2rem;
+    text-decoration: none;
 }

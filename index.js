@@ -1,1 +1,3 @@
-console.log('connected');
+$(() => {
+    // BLOCKER.debug('log', $options);
+});

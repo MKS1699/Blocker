@@ -29,14 +29,6 @@ const BLOCKER = {
         },
         'firefox': {
 
-        },
-        'debug': (what, val) => {
-            if (what === 'print' || 'log') {
-                console.log(val);
-            }
-            else if(what === 'type') {
-                console.log(typeof val);
-            }
         }
     }
 }

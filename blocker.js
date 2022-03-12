@@ -29,6 +29,43 @@ const BLOCKER = {
         },
         'firefox': {
 
+        },
+        'alert': (data, alertFor = null) => {
+            // removing previous notifications if any
+            $('body').children('.noti').remove();
+            
+            // creating element for showing notification
+            $noti = $('<div class="noti">');
+            $noti.css({
+                'font-size': '1rem',
+                'color': 'white',
+                'background-color': 'grey',
+                'padding': '2%',
+                'z-index': '1',
+                'position': 'absolute',
+                'left': '50%',
+                'top': '50%',
+                'transform': 'translate(-50%, -50%)',
+                'width': '100%',
+                'height': 'auto',
+                'text-align': 'center',
+                'cursor': 'help',
+                'opacity': '1 !important'
+            });
+
+            // message according to the alert type
+            if (alertFor == 'add') {
+                $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span> has been added to the block list, to update or remove the url' + ' check the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
+            }
+
+            // appending elements
+            $noti.append($msg);
+            $('body').append($noti);
+
+            // hiding the notification after 3 second
+            setTimeout(() => {
+                $noti.remove();
+            }, 3000);
         }
     }
 }

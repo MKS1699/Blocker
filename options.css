@@ -50,7 +50,6 @@
     grid-template-rows: 1fr;
     grid-template-areas: "newurl btn";
     width: 100%;
-    /* overflow: scroll; */
 }
 
 .input {

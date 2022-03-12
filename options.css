@@ -49,8 +49,8 @@
     grid-template-columns: .6fr .3fr;
     grid-template-rows: 1fr;
     grid-template-areas: "newurl btn";
-    width: 80%;
-    overflow: scroll;
+    width: 100%;
+    /* overflow: scroll; */
 }
 
 .input {

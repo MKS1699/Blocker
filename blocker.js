@@ -30,10 +30,10 @@ const BLOCKER = {
         'firefox': {
 
         },
-        'alert': (data, alertFor = null) => {
+        'alertUSER': (data, alertFor = null) => {
             // removing previous notifications if any
             $('body').children('.noti').remove();
-            
+
             // creating element for showing notification
             $noti = $('<div class="noti">');
             $noti.css({
@@ -66,6 +66,64 @@ const BLOCKER = {
             setTimeout(() => {
                 $noti.remove();
             }, 3000);
+        },
+        'showDATA': (what, where = null) => {
+            // what as in what to show on the page.
+            // where as in which element to show the data 
+            // where needs to be an ID/class
+            // currently made to show the urls on the options page for editing and/or correction , deleting
+            $listel = $('<div id="data-list">');
+            $listel.css({
+                'width': '100%'
+            });
+            for (data of what) {
+                $dataindex = what.indexOf(data);
+                $datael = $('<div id="data-list-' + $dataindex + '">');
+                $dataelID = $datael.attr('id');
+                $datatextel = $('<div id="' + $dataelID + '-text">');
+                $datatextel.css({
+                    'grid-area': 'text',
+                    'padding-top': '10px',
+                    'text-align': 'center'
+                });
+                $datatextel.append(data);
+                $datael.append($datatextel);
+                $datael.css({
+                    'display': 'grid',
+                    'grid-template-columns': '.6fr .2fr .2fr',
+                    'grid-template-rows': '1fr',
+                    'grid-template-areas': '"text edit delete"',
+                    'height': '50px',
+                    'border-bottom': 'solid 3px red',
+                    'margin-top': '10px'
+                });
+                $datael.append(BLOCKER.methods.createICON($dataelID, 'edit'));
+                $datael.append(BLOCKER.methods.createICON($dataelID, 'delete'));
+                $listel.append($datael);
+            }
+            $(where).append($listel);
+        },
+        'createICON': (elID, type) => {
+            $editel = $('<div id="' + elID + '-' + type + '">');
+            $editel.append(BLOCKER.data.icons[type].html);
+            $editel.css({
+                'grid-area': type,
+                'height': '40px',
+                'border-right': 'solid 3px red',
+                'cursor' : 'pointer'
+            });
+            if (type === 'edit' || type === 'check') {
+                $editel.css({
+                    'border-left': 'solid 3px red'
+                });
+            }
+            $editel.click(() => {
+                BLOCKER.methods.iconEvents(elID,type);
+            });
+            return $editel
+        },
+        'iconEvents': (elID, eventtype) => {
+            console.log('you clicked on '+elID+' for ' + eventtype);
         }
     }
 }

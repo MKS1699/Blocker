@@ -34,11 +34,6 @@
     cursor: pointer;
 }
 
-.add {
-    font-size: 1.8rem;
-    grid-area: add;
-}
-
 .content {
     padding-left: 5%;
     margin-top: 5%;

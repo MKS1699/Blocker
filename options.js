@@ -38,9 +38,14 @@ $(() => {
         
         // todo code to show the blocked urls
         BLOCKER.methods.showDATA(BLOCKER.data.blocked_urls, '.content');
+        $('.content').toggleClass('content-data-list');
     }
 
     function addURL(){
-        // todo code to back to block URL list
+        $('.content').children('#data-list').remove();
+        $('.content').toggleClass('content-data-list');
+        $add.hide();
+        $('.content').children().show();
+        $('.nav').children('#list').show();
     }
 });

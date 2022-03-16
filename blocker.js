@@ -74,7 +74,8 @@ const BLOCKER = {
             // currently made to show the urls on the options page for editing and/or correction , deleting
             $listel = $('<div id="data-list">');
             $listel.css({
-                'width': '100%'
+                'width': '90%',
+                'grid-area' : 'data-list'
             });
             for (data of what) {
                 $dataindex = what.indexOf(data);

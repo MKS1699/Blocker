@@ -78,3 +78,12 @@
     padding: 5%;
     cursor: pointer;
 }
+
+/* dynamic classes for content when blocked url being shown */
+
+.content-data-list{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "data-list";
+}

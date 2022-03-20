@@ -31,6 +31,8 @@ const BLOCKER = {
 
         },
         'alertUSER': (data, alertFor = null) => {
+            // data = which is add/edited/deleted.
+            // alertfor = type of alert [add/edit/delete]
             // removing previous notifications if any
             $('body').children('.noti').remove();
 
@@ -67,28 +69,33 @@ const BLOCKER = {
                 $noti.remove();
             }, 3000);
         },
+        // function for showing the data [blocked urls] on the page
         'showDATA': (what, where = null) => {
             // what as in what to show on the page.
             // where as in which element to show the data 
             // where needs to be an ID/class
             // currently made to show the urls on the options page for editing and/or correction , deleting
-            $listel = $('<div id="data-list">');
-            $listel.css({
+            $listel = $('<div id="data-list">'); //creating the element to show the blocked urls {parent element}
+            //css for the list element
+            $listel.css({ 
                 'width': '90%',
-                'grid-area' : 'data-list'
-            });
+                'grid-area': 'data-list'
+            }); 
+            // loop to get all the blocked urls
             for (data of what) {
-                $dataindex = what.indexOf(data);
-                $datael = $('<div id="data-list-' + $dataindex + '">');
-                $dataelID = $datael.attr('id');
-                $datatextel = $('<div id="' + $dataelID + '-text">');
+                $dataindex = what.indexOf(data); //index of the blocked url
+                $datael = $('<div id="data-list-' + $dataindex + '">'); // element for each blocked url for text and icons/buttons
+                $dataelID = $datael.attr('id'); //getting the ID created for each blocked url
+                $datatextel = $('<div id="' + $dataelID + '-text">'); // creating element to show the text 
+                // text element css
                 $datatextel.css({
                     'grid-area': 'text',
                     'padding-top': '10px',
                     'text-align': 'center'
                 });
-                $datatextel.append(data);
-                $datael.append($datatextel);
+                $datatextel.append(data); // appending text to the text element
+                $datael.append($datatextel); //appending the text element to the blocked url element
+                // css for each blocked url element
                 $datael.css({
                     'display': 'grid',
                     'grid-template-columns': '.6fr .2fr .2fr',
@@ -98,33 +105,79 @@ const BLOCKER = {
                     'border-bottom': 'solid 3px red',
                     'margin-top': '10px'
                 });
-                $datael.append(BLOCKER.methods.createICON($dataelID, 'edit'));
-                $datael.append(BLOCKER.methods.createICON($dataelID, 'delete'));
-                $listel.append($datael);
+                // appending icons to the each blocked url element
+                $datael.append(BLOCKER.methods.createICON($dataelID, 'edit')); // edit icon
+                $datael.append(BLOCKER.methods.createICON($dataelID, 'delete')); // delete icon
+                $listel.append($datael); // appending each blocked url element to the list element
             }
-            $(where).append($listel);
+            $(where).append($listel); // appending the list element to the page for display
         },
+        // function for creating the icons/with their respective events
         'createICON': (elID, type) => {
-            $editel = $('<div id="' + elID + '-' + type + '">');
-            $editel.append(BLOCKER.data.icons[type].html);
-            $editel.css({
+            $iconel = $('<div id="' + elID + '-' + type + '">'); // element for creating the icons
+            $iconel.append(BLOCKER.data.icons[type].html); // appending the html for the icon which is svg
+            //css for the icon element
+            $iconel.css({
                 'grid-area': type,
                 'height': '40px',
                 'border-right': 'solid 3px red',
-                'cursor' : 'pointer'
+                'cursor': 'pointer'
             });
+            // icon specific css
             if (type === 'edit' || type === 'check') {
-                $editel.css({
+                $iconel.css({
                     'border-left': 'solid 3px red'
                 });
             }
-            $editel.click(() => {
-                BLOCKER.methods.iconEvents(elID,type);
+            if( type === 'check') {
+                $('#'+elID).css({
+                    'grid-template-areas' : '"text check delete"'
+                });
+            }            
+            if( type === 'edit') {
+                $('#'+elID).css({
+                    'grid-template-areas' : '"text edit delete"'
+                });
+            }
+            // asssigning respective event to the icons
+            $iconel.click(() => {
+                BLOCKER.methods.iconEvents(elID, type);
             });
-            return $editel
+            return $iconel; // returning the icon created
         },
-        'iconEvents': (elID, eventtype) => {
-            console.log('you clicked on '+elID+' for ' + eventtype);
+        // function for icon respective to their type
+        'iconEvents': (elID, eventType) => {
+            // elID = ID of the element where the icon specific event is to be done
+            // eventType = type of the event to be done
+            $arr = BLOCKER.data.blocked_urls; // array of blocked urls
+            $el = $('#' + elID); // element containing url and its buttons/icons for function
+            $eventElID = elID + '-' + eventType; // ID of the element in which the even is attached 
+            $eventEL = $('#' + $eventElID); // icon element of the event
+            $urlel = $('#' + elID + '-text'); // element of the url
+            $url = $('#' + elID + '-text').text(); // blocked url/data/text of the element
+            $urlindex = $arr.indexOf($url); // index of the url in the blocked urls array
+            //event specific actions
+            // delete action
+            if (eventType === 'delete') {
+                $el.remove(); // removing the current element
+                $arr.splice($urlindex, 1); // deleting the same url from the array list
+                // todo add function for syncing data with the browser after deletion
+            }
+            // edit action
+            if (eventType === 'edit') {
+                $urlel.html('<input type = "text" id="newVal" style="text-align : center; border : red solid 3px; height : 30px; width: 80%;" value="'+$url+'">'); // changing the element to input for editing
+                $eventEL.replaceWith(BLOCKER.methods.createICON(elID, 'check')); // replacing the edit icon with the check icon for action after editing
+            }
+            // check action
+            if(eventType  === 'check') {
+                $newVal = $urlel.children('#newVal').val(); // getting the new value / editied url
+                $('#newVal').remove(); // removing the input tag created by edit icon
+                $urlel.text($newVal); // showing the new url
+                $split = elID.split(''); // splitting the elID to get the index of the old url which was edited
+                $index = $split[$split.length-1]; //getting the index value from the splitted array above
+                $arr[$index] = $newVal; // changing old url/value with the new url/value
+                $eventEL.replaceWith(BLOCKER.methods.createICON(elID, 'edit')); // replacing the check icon with edit icon for further editing
+            }
         }
     }
 }

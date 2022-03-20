@@ -30,9 +30,10 @@ const BLOCKER = {
         'firefox': {
 
         },
-        'alertUSER': (data, alertFor = null) => {
+        'alertUSER': (data, alertFor = null, odata = null) => {
             // data = which is add/edited/deleted.
-            // alertfor = type of alert [add/edit/delete]
+            // alertfor = type of alert [add/edit or update/delete]
+            // odata = other data if any {mainly the old data which was updated}
             // removing previous notifications if any
             $('body').children('.noti').remove();
 
@@ -56,10 +57,18 @@ const BLOCKER = {
             });
 
             // message according to the alert type
+            // for adding the urls
             if (alertFor == 'add') {
-                $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span> has been added to the block list, to update or remove the url' + ' check the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
+                $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span> has been added to the block list, to update or remove the url check the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
             }
-
+            // for deleting the data
+            if (alertFor == 'delete') {
+                $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span> has been deleted from the block list, check the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
+            }
+            //for edit/update of the data 
+            if(alertFor == 'update') {
+                $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + odata + '</span> has been updated to ' + '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span>' +' see the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
+            }
             // appending elements
             $noti.append($msg);
             $('body').append($noti);
@@ -67,7 +76,7 @@ const BLOCKER = {
             // hiding the notification after 3 second
             setTimeout(() => {
                 $noti.remove();
-            }, 3000);
+            }, 2500);
         },
         // function for showing the data [blocked urls] on the page
         'showDATA': (what, where = null) => {
@@ -161,6 +170,7 @@ const BLOCKER = {
             if (eventType === 'delete') {
                 $el.remove(); // removing the current element
                 $arr.splice($urlindex, 1); // deleting the same url from the array list
+                BLOCKER.methods.alertUSER($url, 'delete') // alerting the user for deletion of the url
                 // todo add function for syncing data with the browser after deletion
             }
             // edit action
@@ -175,8 +185,11 @@ const BLOCKER = {
                 $urlel.text($newVal); // showing the new url
                 $split = elID.split(''); // splitting the elID to get the index of the old url which was edited
                 $index = $split[$split.length-1]; //getting the index value from the splitted array above
+                $oldVal = $arr[$index]; // getting the old value
                 $arr[$index] = $newVal; // changing old url/value with the new url/value
                 $eventEL.replaceWith(BLOCKER.methods.createICON(elID, 'edit')); // replacing the check icon with edit icon for further editing
+                // alerting the user for the edit/update of the urls
+                BLOCKER.methods.alertUSER($newVal, 'update', $oldVal);
             }
         }
     }

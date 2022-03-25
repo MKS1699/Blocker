@@ -5,6 +5,7 @@ const BLOCKER = {
             'https://www.youtube.com',
             'https://www.instagram.com'
         ],
+        'block_counter': 0,
         'icons': {
             'edit': {
                 'type': 'svg',
@@ -28,7 +29,40 @@ const BLOCKER = {
 
         },
         'firefox': {
-
+            'store': (data, propName = 'BlockerExt-data') => {
+                // function for storing data on firefox browser
+                // data = data to store
+                // propName = variable for storing data if not present will be made as null
+                // if type of data is object making it every key as a single variable and storing it as such
+                if (propName !== 'BlockerExt-data') {
+                    propName = 'BlockerExt-data-' + propName;
+                }
+                if (typeof data === 'object') {
+                    let keys = Object.keys(data); // getting all the keys of the data
+                    let values = Object.values(data); // getting all the values of the data
+                    //looping all the keys
+                    for (key of keys) {
+                        //looping all the values
+                        for (value of values) {
+                            // specific value for specific key
+                            if (data[key] === value) {
+                                let newProp = ('BlockerExt-' + propName + '-' + key); // creating new key title  for the value of values
+                                let propValue = data[key].toString(); // getting value of that speccific key
+                                window.localStorage[newProp] = propValue; // storing exact value to its exact key
+                            }
+                        }
+                    }
+                }
+                // if data is string 
+                else if (typeof data === 'string') {
+                    // storing as is it.
+                    window.localStorage[propName] = data;
+                }
+            },
+            'get': (key) => {
+                // function for getting stored data on firefox
+                return window.localStorage.getItem(key);
+            }
         },
         'alertUSER': (data, alertFor = null, odata = null) => {
             // data = which is add/edited/deleted.
@@ -66,8 +100,8 @@ const BLOCKER = {
                 $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span> has been deleted from the block list, check the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
             }
             //for edit/update of the data 
-            if(alertFor == 'update') {
-                $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + odata + '</span> has been updated to ' + '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span>' +' see the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
+            if (alertFor == 'update') {
+                $msg = '<span style="font-size: 1.5rem; font-style: italic;">' + odata + '</span> has been updated to ' + '<span style="font-size: 1.5rem; font-style: italic;">' + data + '</span>' + ' see the <a style="text-decoration: none; cursor: click;" href="#list">BLOCK List</a>.'
             }
             // appending elements
             $noti.append($msg);
@@ -86,10 +120,10 @@ const BLOCKER = {
             // currently made to show the urls on the options page for editing and/or correction , deleting
             $listel = $('<div id="data-list">'); //creating the element to show the blocked urls {parent element}
             //css for the list element
-            $listel.css({ 
+            $listel.css({
                 'width': '90%',
                 'grid-area': 'data-list'
-            }); 
+            });
             // loop to get all the blocked urls
             for (data of what) {
                 $dataindex = what.indexOf(data); //index of the blocked url
@@ -138,14 +172,14 @@ const BLOCKER = {
                     'border-left': 'solid 3px red'
                 });
             }
-            if( type === 'check') {
-                $('#'+elID).css({
-                    'grid-template-areas' : '"text check delete"'
+            if (type === 'check') {
+                $('#' + elID).css({
+                    'grid-template-areas': '"text check delete"'
                 });
-            }            
-            if( type === 'edit') {
-                $('#'+elID).css({
-                    'grid-template-areas' : '"text edit delete"'
+            }
+            if (type === 'edit') {
+                $('#' + elID).css({
+                    'grid-template-areas': '"text edit delete"'
                 });
             }
             // asssigning respective event to the icons
@@ -171,20 +205,20 @@ const BLOCKER = {
                 $el.remove(); // removing the current element
                 $arr.splice($urlindex, 1); // deleting the same url from the array list
                 BLOCKER.methods.alertUSER($url, 'delete') // alerting the user for deletion of the url
-                // todo add function for syncing data with the browser after deletion
+                // todo code for syncing the current data with the stored data on browser.
             }
             // edit action
             if (eventType === 'edit') {
-                $urlel.html('<input type = "text" id="newVal" style="text-align : center; border : red solid 3px; height : 30px; width: 80%;" value="'+$url+'">'); // changing the element to input for editing
+                $urlel.html('<input type = "text" id="newVal" style="text-align : center; border : red solid 3px; height : 30px; width: 80%;" value="' + $url + '">'); // changing the element to input for editing
                 $eventEL.replaceWith(BLOCKER.methods.createICON(elID, 'check')); // replacing the edit icon with the check icon for action after editing
             }
             // check action
-            if(eventType  === 'check') {
+            if (eventType === 'check') {
                 $newVal = $urlel.children('#newVal').val(); // getting the new value / editied url
                 $('#newVal').remove(); // removing the input tag created by edit icon
                 $urlel.text($newVal); // showing the new url
                 $split = elID.split(''); // splitting the elID to get the index of the old url which was edited
-                $index = $split[$split.length-1]; //getting the index value from the splitted array above
+                $index = $split[$split.length - 1]; //getting the index value from the splitted array above
                 $oldVal = $arr[$index]; // getting the old value
                 $arr[$index] = $newVal; // changing old url/value with the new url/value
                 $eventEL.replaceWith(BLOCKER.methods.createICON(elID, 'edit')); // replacing the check icon with edit icon for further editing

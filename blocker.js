@@ -6,6 +6,7 @@ const BLOCKER = {
             'https://www.instagram.com'
         ],
         'block_counter': 0,
+        'currentBrowser' : null,
         'icons': {
             'edit': {
                 'type': 'svg',
@@ -228,3 +229,8 @@ const BLOCKER = {
         }
     }
 }
+
+// stuff to do after loading of the page
+$().ready(
+
+);

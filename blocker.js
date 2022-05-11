@@ -63,7 +63,11 @@ const BLOCKER = {
             'get': (key) => {
                 // function for getting stored data on firefox
                 return window.localStorage.getItem(key);
-            }
+            },
+            // function for getting the tabs opened in the browser in the current window
+            'getTabs' : ()=>{
+                return browser.tabs.query({currentWindow : true});
+            },
         },
         'alertUSER': (data, alertFor = null, odata = null) => {
             // data = which is add/edited/deleted.
@@ -232,5 +236,4 @@ const BLOCKER = {
 
 // stuff to do after loading of the page
 $().ready(
-
 );
